@@ -3,12 +3,6 @@ Script to get a list of udpated threads on edulix.com for tracking admits/reject
 
 ## Getting Started
 
-Install dependencies
-
-```shell
-pip install python
-```
-
 Install BeautifulSoup
 
 ```shell
