@@ -1,6 +1,7 @@
 from urllib import urlopen
 from urllib2 import HTTPError
 from BeautifulSoup import BeautifulSoup
+import re
 
 base_url = 'http://www.edulix.com/forum/'
 updates = []
@@ -26,6 +27,19 @@ def get_split(rows,count):
         if data != None:
             return count
 
+def get_posts(url):
+    post_page = urlopen(base_url+url)
+    post_soup = BeautifulSoup(post_page)
+    title = post_soup.find('title')
+    posts = post_soup.findAll('div',{'id':re.compile('^(pid)')})
+
+    counter = 0
+    for post in posts:
+        if str(post).__contains__('CS') or str(post).__contains__('Computer Science'):
+            counter += 1
+    if counter > 0:
+        print title.text + ': This Thread has Computer Science(CS) Admits/Rejects\n'
+
 def get_updates():
     forums_page = start_scraping(base_url + 'forumdisplay.php?fid=148')
     tables = forums_page.findAll('table')
@@ -37,12 +51,11 @@ def get_updates():
         soup = BeautifulSoup(str(row))
         latest_post = soup.find('span',{'class':'lastpost smalltext'})
         if str(latest_post).__contains__(vars[0]) or str(latest_post).__contains__(vars[1]):
-            updates.append(soup.find('a',{'class':' subject_new'}).text)
+            updates.append(soup.find('a',{'class':' subject_new'})['href'])
 
     for update in updates:
-        print update
-        print '\n'
+        get_posts(update)
 
 if __name__ == '__main__':
     get_updates()
-
+    raw_input('Press Enter to Exit')
